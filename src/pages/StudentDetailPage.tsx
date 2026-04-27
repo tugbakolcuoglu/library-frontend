@@ -21,35 +21,63 @@ type StudentDetail = {
 };
 
 function StudentDetailPage() {
-  const { id } = useParams(); /* URL parametresinden öğrenci ID'sini almak için kullanılan hook */
-  const navigate = useNavigate(); /* Sayfalar arası geçiş yapmak için kullanılan hook */
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const [student, setStudent] = useState<StudentDetail | null>(null); /* Öğrenci detay bilgilerini tutan state, başlangıçta null olarak tanımlanır */
-  const [loading, setLoading] = useState<boolean>(true); /* Veri yüklenme durumunu tutan state */
-  const [error, setError] = useState<string>(""); /* Hata mesajını tutan state */
+  const [student, setStudent] = useState<StudentDetail | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+
+  const [name, setName] = useState<string>("");
+  const [surname, setSurname] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   const fetchStudentDetail = async () => {
     try {
       const response = await api.get<StudentDetail>(`/student/${id}`);
       setStudent(response.data);
+
+      setName(response.data.name);
+      setSurname(response.data.surname);
+      setPhoneNumber(response.data.phoneNumber);
+      setEmail(response.data.email);
     } catch (error: any) {
       setError(error.response?.data || "Öğrenci detayı alınamadı");
     } finally {
       setLoading(false);
     }
-  }; /* Öğrenci detayını API üzerinden çekmek için kullanılan fonksiyon, hata durumunda error state'ini günceller */
+  };
 
   useEffect(() => {
     fetchStudentDetail();
-  }, [id]); /* Sayfa yüklendiğinde veya ID değiştiğinde öğrenci detayını çekmek için useEffect kullanılır */
+  }, [id]);
+
+  const handleUpdate = async () => {
+    try {
+      await api.put("/student", {
+        id,
+        name,
+        surname,
+        phoneNumber: phoneNumber.replace(/\s/g, ""),
+        email,
+      });
+
+      setMessage("Öğrenci bilgileri güncellendi");
+      fetchStudentDetail();
+    } catch (error: any) {
+      setMessage(error.response?.data || "Öğrenci güncellenemedi");
+    }
+  };
 
   const sortedHistory = useMemo(() => {
-    if (!student?.history) return []; /* Öğrenci veya geçmiş bilgisi yoksa boş bir dizi döndür */
+    if (!student?.history) return [];
 
     return [...student.history].sort(
       (a, b) =>
         new Date(b.assignedDate).getTime() - new Date(a.assignedDate).getTime()
-    ); /* Öğrencinin kitap geçmişini alınma tarihine göre sıralar */
+    );
   }, [student]);
 
   if (loading) return <p className="loading">Yükleniyor...</p>;
@@ -67,18 +95,42 @@ function StudentDetailPage() {
 
       <div className="form-card">
         <h2>Öğrenci Bilgileri</h2>
-        <p>
-          <strong>Ad:</strong> {student.name}
-        </p>
-        <p>
-          <strong>Soyad:</strong> {student.surname}
-        </p>
-        <p>
-          <strong>Telefon:</strong> {student.phoneNumber}
-        </p>
-        <p>
-          <strong>E-posta:</strong> {student.email}
-        </p>
+
+        <div className="custom-form">
+          <input
+            type="text"
+            placeholder="Ad"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Soyad"
+            value={surname}
+            onChange={(e) => setSurname(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Telefon"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          />
+
+          <input
+            type="email"
+            placeholder="E-posta"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <button type="button" onClick={handleUpdate}>
+            Güncelle
+          </button>
+        </div>
+
+        {message && <p className="message">{message}</p>}
 
         <button className="back-btn" onClick={() => navigate("/students")}>
           Geri Dön
@@ -98,7 +150,9 @@ function StudentDetailPage() {
                   <h3>{item.bookTitle}</h3>
                   <span
                     className={
-                      item.returnedDate ? "history-status returned" : "history-status active"
+                      item.returnedDate
+                        ? "history-status returned"
+                        : "history-status active"
                     }
                   >
                     {item.returnedDate ? "İade Edildi" : "Ödünçte"}
@@ -118,7 +172,7 @@ function StudentDetailPage() {
                     ? new Date(item.returnedDate).toLocaleString()
                     : "Henüz iade edilmedi"}
                 </p>
-              </div> /* Öğrencinin kitap geçmişini listelemek için kullanılan bölüm, her bir kitap için detay bilgileri gösterilir */
+              </div>
             ))}
           </div>
         )}

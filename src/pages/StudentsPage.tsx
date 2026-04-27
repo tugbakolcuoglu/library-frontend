@@ -19,7 +19,7 @@ function StudentPage() {
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
 
-    const navigate = useNavigate(); /* Sayfalar arası geçiş yapmak için kullanılan hook */
+    const navigate = useNavigate();
 
     const fetchStudents = async () => {
         try {
@@ -30,20 +30,22 @@ function StudentPage() {
         } finally {
             setLoading(false);
         }
-    }; /* Öğrencileri API üzerinden çekmek için kullanılan fonksiyon, hata durumunda message state'ini günceller */
+    };
 
     useEffect(() => {
         fetchStudents();
     }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); /* Formun varsayılan submit davranışını engellemek için kullanılır */
+        e.preventDefault();
+
+        const cleanedPhoneNumber = phoneNumber.replace(/\s/g, "");
 
         try {
             await api.post("/student", {
                 name,
                 surname,
-                phoneNumber,
+                phoneNumber: cleanedPhoneNumber,
                 email,
             });
 
@@ -56,7 +58,7 @@ function StudentPage() {
         } catch (error: any) {
             setMessage(error.response?.data || "Öğrenci eklenemedi");
         }
-    }; /* Yeni öğrenci eklemek için kullanılan fonksiyon, hata durumunda message state'ini günceller */
+    };
 
     const handleDelete = async (id: string) => {
         try {
@@ -66,7 +68,7 @@ function StudentPage() {
         } catch (error: any) {
             setMessage(error.response?.data || "Öğrenci silinemedi");
         }
-    }; /* Öğrenci silmek için kullanılan fonksiyon, hata durumunda message state'ini günceller */
+    };
 
     if (loading) return <p className="loading">Yükleniyor...</p>;
 
@@ -86,7 +88,7 @@ function StudentPage() {
                         placeholder="Ad"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                    /> 
+                    />
 
                     <input
                         type="text"
@@ -113,7 +115,7 @@ function StudentPage() {
                 </form>
 
                 {message && <p className="message">{message}</p>}
-            </div> 
+            </div>
 
             <div className="list-section">
                 {students.length === 0 ? (
@@ -138,7 +140,7 @@ function StudentPage() {
                             >
                                 Sil
                             </button>
-                        </div> /* Öğrencileri listelemek için kullanılan bölüm, her öğrenci için detay sayfasına geçiş ve silme işlemi yapılabilir */
+                        </div>
                     ))
                 )}
             </div>
