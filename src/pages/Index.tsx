@@ -3,6 +3,7 @@ import { Navbar } from "../components/Navbar"
 
 
 const Index = ({ children }: { children: React.ReactNode }) => {
+
    return (
       <>
          <Navbar />
