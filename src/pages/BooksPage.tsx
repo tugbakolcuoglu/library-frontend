@@ -1,37 +1,13 @@
-import { useEffect, useState } from "react";
-import api from "../services/api";
+import useGetBooks from "../hooks/useGetBooks";
 
-type Book = {
-  id: string;
-  title: string;
-  author: string;
-  isAvailable: boolean;
-}; /* Kitap bilgilerini tutan tip tanımı */ 
+/* Kitap bilgilerini tutan tip tanımı */
 
 function BooksPage() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
 
-  const fetchBooks = async () => {
-    try {
-      const response = await api.get<Book[]>("/books");
-      setBooks(response.data);
-      setError("");
-    } catch (error: any) {
-      console.log(error);
-      setError("Kitaplar API'den alınamadı");
-    } finally {
-      setLoading(false);
-    }
-  }; /* Kitapları API üzerinden çekmek için kullanılan fonksiyon, hata durumunda error state'ini günceller */ 
-
-  useEffect(() => {
-    fetchBooks();
-  }, []); 
+  const { books, loading, error } = useGetBooks();
 
   if (loading) return <p className="loading">Yükleniyor...</p>;
-  if (error) return <p className="error">{error}</p>; /* Yüklenme ve hata durumlarını kullanıcıya göstermek için koşullu render kullanılır */ 
+  if (error) return <p className="error">{error}</p>; /* Yüklenme ve hata durumlarını kullanıcıya göstermek için koşullu render kullanılır */
 
   return (
     <div className="books-container">

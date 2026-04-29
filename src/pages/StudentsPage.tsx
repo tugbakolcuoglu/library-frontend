@@ -43,10 +43,10 @@ function StudentPage() {
 
         try {
             await api.post("/student", {
-                name,
-                surname,
-                phoneNumber: cleanedPhoneNumber,
-                email,
+                // name,
+                // surname,
+                // phoneNumber: cleanedPhoneNumber,
+                // email,
             });
 
             setMessage("Öğrenci eklendi");
