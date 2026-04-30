@@ -16,7 +16,10 @@ function LoginPage() {
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
 
+        console.log("handleSubmit çalıştı");
+
         const loginSuccess = await login(username, password);
+        console.log("loginSuccess:", loginSuccess);
 
         if (loginSuccess) {
             setMessage("Giriş başarılı");

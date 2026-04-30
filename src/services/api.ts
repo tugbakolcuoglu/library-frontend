@@ -2,15 +2,15 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:5291/api",
+  timeout: 5000,
 });
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    alert("Bir hata oluştu: " + (error.response?.data?.message || error.message));
+    console.error("API error:", error);
     return Promise.reject(error);
   }
-)
-
+);
 
 export default api;

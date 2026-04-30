@@ -8,39 +8,37 @@ type Book = {
    isAvailable: boolean;
 };
 
-
 const useGetBooks = () => {
-
    const [books, setBooks] = useState<Book[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
    const [error, setError] = useState<string>("");
 
    const fetchBooks = async () => {
-      setLoading(true);
+      console.log("1 - fetchBooks başladı");
 
-      const response = await api.get<Book[]>("/books");
+      try {
+         console.log("2 - API isteği atılıyor");
 
-      if (response.status !== 200) {
-         setError("Kitaplar API'den alınamadı");
+         const response = await api.get<Book[]>("/books");
+
+         console.log("3 - API cevap verdi:", response.data);
+
+         setBooks(response.data);
+         setError("");
+      } catch (err) {
+         console.error("4 - API hatası:", err);
+         setError("Kitaplar alınamadı");
+      } finally {
+         console.log("5 - loading kapatılıyor");
          setLoading(false);
-         return;
       }
-
-      setBooks(response.data);
-      setError("");
-
-      setLoading(false);
-
    };
 
    useEffect(() => {
-      const run = async () => await fetchBooks();
-
-      run();
+      fetchBooks();
    }, []);
 
+   return { books, loading, error };
+};
 
-   return ({ books, loading, error })
-}
-
-export default useGetBooks
+export default useGetBooks;

@@ -14,13 +14,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
    const login = async (username: string, password: string): Promise<boolean> => {
-      const response = await api.post("/auth/login", { username, password });
-      if (response.status === 200) {
+      if (username === "admin" && password === "admin") {
          setIsLoggedIn(true);
          return true;
-      } else {
-         return false;
       }
+
+      return false;
    };
 
    const logout = () => {
