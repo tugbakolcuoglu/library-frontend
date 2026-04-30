@@ -334,28 +334,6 @@ nav a.active {
   cursor: not-allowed;
 }
 
-.custom-form select {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid #dbe2ea;
-  background: #f8fafc;
-  font-size: 15px;
-  outline: none;
-  transition: 0.2s ease;
-}
-
-.custom-form select:focus {
-  border-color: #60a5fa;
-  background: white;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-}
-
-.custom-form select:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .history-card-top {
   display: flex;
   justify-content: space-between;

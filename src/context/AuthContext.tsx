@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import api from "../services/api";
 
 type AuthContextType = {
    isLoggedIn: boolean;
@@ -10,11 +9,14 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-
    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
    const login = async (username: string, password: string): Promise<boolean> => {
-      if (username === "admin" && password === "admin") {
+      const isValidUser =
+         username.trim() === "admin" &&
+         password.trim() === "admin";
+
+      if (isValidUser) {
          setIsLoggedIn(true);
          return true;
       }
@@ -23,11 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    };
 
    const logout = () => {
-      const confirmLogout = window.confirm("Çıkış yapmak istediğinize emin misiniz?");
-
-      if (confirmLogout) {
-         setIsLoggedIn(false);
-      }
+      setIsLoggedIn(false);
    };
 
    return (
@@ -37,8 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    );
 };
 
-
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
    const context = useContext(AuthContext);
 
