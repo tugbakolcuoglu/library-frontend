@@ -1,81 +1,26 @@
-import { useEffect, useState } from "react";
-import api from "../services/api";
+import { useBooks } from "../context/BooksContext";
+import { useStudents } from "../context/StudentContext";
+import { useBorrowBook } from "../hooks/useBorrowBook";
 
-type Student = {
-    id: string;
-    name: string;
-    surname: string;
-};
-
-type Book = {
-    id: string;
-    title: string;
-    author: string;
-    isAvailable: boolean;
-};
 
 function BorrowPage() {
 
-    const [students, setStudents] = useState<Student[]>([]);
-    const [books, setBooks] = useState<Book[]>([]);
-    const [studentId, setStudentId] = useState<string>("");
-    const [bookId, setBookId] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(true);
+    const { availableBooks, loading: booksLoading, error: booksError, getBooks: refetch } = useBooks();
 
-    const fetchData = async () => {
-        try {
-            const [studentsRes, booksRes] = await Promise.all([
-                api.get<Student[]>("/student"),
-                api.get<Book[]>("/books"),
-            ]); /* Öğrencileri ve kitapları API üzerinden eş zamanlı olarak çekmek için Promise.all kullanılır, hata durumunda message state'ini günceller */
+    const { students, loading: studentsLoading, error: studentsError } = useStudents();
 
-            const sortedStudents = [...studentsRes.data].sort((a, b) =>
-                `${a.name} ${a.surname}`.localeCompare(`${b.name} ${b.surname}`, "tr")
-            ); /* Öğrencileri isim ve soyisimlerine göre sıralar */
+    const {
+        selectedBookId,
+        selectedStudentId,
+        setSelectedBookId,
+        setSelectedStudentId,
+        successMessage,
+        handleBorrowSubmit,
+        error: submitError,
+        loading: submitLoading
+    } = useBorrowBook({ onBorrowSuccess: refetch });
 
-            const availableBooks = booksRes.data
-                .filter((book) => book.isAvailable)
-                .sort((a, b) => a.title.localeCompare(b.title, "tr")); /* Sadece müsait olan kitapları filtreler ve başlığa göre sıralar */
 
-            setStudents(sortedStudents); /* Sıralanmış öğrencileri ve müsait kitapları state'e kaydeder */
-            setBooks(availableBooks); /* Sıralanmış öğrencileri ve müsait kitapları state'e kaydeder */
-        } catch (error: any) {
-            setMessage(error.response?.data || "Veriler alınamadı");
-        } finally {
-            setLoading(false); /* Veri yüklenme durumunu günceller */
-
-        }
-    }; /* Öğrencileri ve kitapları API üzerinden çekmek için kullanılan fonksiyon, hata durumunda message state'ini günceller */
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        if (!studentId || !bookId) {
-            setMessage("Lütfen öğrenci ve kitap seçin");
-            return;
-        }
-
-        try {
-            await api.post("/library/borrow", {
-                studentId,
-                bookId,
-            });
-
-            setMessage("Kitap ödünç verildi");
-            setStudentId("");
-            setBookId("");
-            fetchData();
-        } catch (error: any) {
-            setMessage(error.response?.data || "Ödünç verme işlemi başarısız");
-        }
-    }; /* Kitap ödünç verme işlemini gerçekleştirmek için kullanılan fonksiyon, hata durumunda message state'ini günceller */
-
-    if (loading) return <p className="loading">Yükleniyor...</p>;
 
     return (
         <div className="page-container">
@@ -87,10 +32,14 @@ function BorrowPage() {
             <div className="form-card">
                 <h2>Ödünç Verme</h2>
 
-                <form onSubmit={handleSubmit} className="custom-form">
+                <form onSubmit={handleBorrowSubmit} className="custom-form">
+                    {submitError && <p className="error">{submitError}</p>} {/* Form submit hatasını gösterir */}
+
+
                     <select
-                        value={studentId}
-                        onChange={(e) => setStudentId(e.target.value)}
+                        value={selectedStudentId}
+                        onChange={(e) => setSelectedStudentId(e.target.value)}
+                        disabled={studentsLoading || students.length === 0}
                     >
                         <option value="">Öğrenci seçin</option>
                         {students.map((student) => (
@@ -99,23 +48,35 @@ function BorrowPage() {
                             </option>
                         ))}
                     </select>
+                    {studentsError && <p className="error">{studentsError}</p>} {/* Hata mesajını gösterir */}
+
+
+
 
                     <select
-                        value={bookId}
-                        onChange={(e) => setBookId(e.target.value)}
+                        value={selectedBookId}
+                        onChange={(e) => setSelectedBookId(e.target.value)}
+                        disabled={booksLoading || availableBooks.length === 0}
                     >
                         <option value="">Kitap seçin</option>
-                        {books.map((book) => (
+                        {availableBooks.map((book) => (
                             <option key={book.id} value={book.id}>
                                 {book.title} - {book.author}
                             </option>
                         ))}
                     </select> {/* Öğrencileri ve kitapları dropdown olarak gösterir, kullanıcı seçim yapabilir */}
+                    {booksError && <p className="error">{booksError}</p>} {/* Hata mesajını gösterir */}
 
-                    <button type="submit">Ödünç Ver</button>
+
+
+                    <button
+                        type="submit"
+                        disabled={!selectedBookId || !selectedStudentId || submitLoading}
+                    >
+                        Ödünç Ver
+                    </button>
+                    {successMessage && <p className="success">{successMessage}</p>} {/* Başarı mesajını gösterir */}
                 </form>
-
-                {message && <p className="message">{message}</p>}
             </div>
         </div>
     );
