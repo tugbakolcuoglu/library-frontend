@@ -2,47 +2,57 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStudents } from "../context/StudentContext";
 
+type Student = {
+  id: string;
+  name: string;
+  surname: string;
+  phoneNumber: string;
+  email: string;
+};
 
-const UpdateStudentForm = () => {
+type UpdateStudentFormProps = {
+  student: Student;
+};
 
+const UpdateStudentForm = ({ student }: UpdateStudentFormProps) => {
   const navigate = useNavigate();
-  const { detailedStudent, updateStudent } = useStudents()
 
-  const [name, setName] = useState<string>(detailedStudent?.name || "");
-  const [surname, setSurname] = useState<string>(detailedStudent?.surname || "");
-  const [phoneNumber, setPhoneNumber] = useState<string>(detailedStudent?.phoneNumber || "");
-  const [email, setEmail] = useState<string>(detailedStudent?.email || "");
+  const { updateStudent } = useStudents();
 
+  const [name, setName] = useState<string>(student.name);
+  const [surname, setSurname] = useState<string>(student.surname);
+  const [phoneNumber, setPhoneNumber] = useState<string>(student.phoneNumber);
+  const [email, setEmail] = useState<string>(student.email);
 
-  // TODO: tipki createStunednForm compoentinda oldugu gibi  update islemi icin ari bir form olustur, burdaki datayi oraya gecir, ve o form update isleminden sorumlu olsun. bu sayfa sadece o formu cagiran parent olarak kalsin.
-  const handleUpdate = async () => {
-    // try {
-    //updateStudent .... bla bla bla
-    //   await api.put("/student", {
-    //     id,
-    //     name,
-    //     surname,
-    //     phoneNumber: phoneNumber.replace(/\s/g, ""),
-    //     email,
-    //   });
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    //   setMessage("Öğrenci bilgileri güncellendi");
-    //   fetchStudentDetail();
-    // } catch (error: any) {
-    //   setMessage(error.response?.data || "Öğrenci güncellenemedi");
-    // }
+    if (!name || !surname || !phoneNumber || !email) {
+      alert("Lütfen tüm alanları doldurun.");
+      return;
+    }
+
+    try {
+      await updateStudent({
+        id: student.id,
+        name,
+        surname,
+        phoneNumber: phoneNumber.replace(/\s/g, ""),
+        email,
+      });
+
+      alert("Öğrenci bilgileri güncellendi");
+      navigate("/students");
+    } catch (error: any) {
+      alert(error.response?.data || "Öğrenci güncellenemedi");
+    }
   };
 
-
-
-  if (!detailedStudent) {
-    return <p>Öğrenci bulunamadı</p>
-  }
   return (
     <div className="form-card">
       <h2>Öğrenci Bilgileri</h2>
 
-      <div className="custom-form">
+      <form onSubmit={handleUpdate} className="custom-form">
         <input
           type="text"
           placeholder="Ad"
@@ -71,18 +81,14 @@ const UpdateStudentForm = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <button type="button" onClick={handleUpdate}>
-          Güncelle
-        </button>
-      </div>
-
-
+        <button type="submit">Güncelle</button>
+      </form>
 
       <button className="back-btn" onClick={() => navigate("/students")}>
         Geri Dön
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default UpdateStudentForm
+export default UpdateStudentForm;

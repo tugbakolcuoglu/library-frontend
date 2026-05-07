@@ -43,7 +43,6 @@ type StudentContextType = {
    getStudentDetail: (id: string) => Promise<void>;
 }
 
-
 const StudentContext = createContext<StudentContextType | undefined>(undefined);
 
 export const StudentProvider = ({ children }: { children: ReactNode }) => {
@@ -54,8 +53,6 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
    const [loading, setLoading] = useState<boolean>(false);
 
    const [error, setError] = useState<string>("");
-
-
 
    const getStudents = async () => {
       setLoading(true);
@@ -149,8 +146,6 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
 
    }, []);
 
-
-
    return (
       <StudentContext.Provider value={values}>
          {children}
@@ -159,7 +154,6 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
 
 
 }
-
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useStudents = () => {

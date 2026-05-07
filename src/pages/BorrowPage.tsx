@@ -20,8 +20,6 @@ function BorrowPage() {
         loading: submitLoading
     } = useBorrowBook({ onBorrowSuccess: refetch });
 
-
-
     return (
         <div className="page-container">
             <div className="page-header">
@@ -34,7 +32,6 @@ function BorrowPage() {
 
                 <form onSubmit={handleBorrowSubmit} className="custom-form">
                     {submitError && <p className="error">{submitError}</p>} {/* Form submit hatasını gösterir */}
-
 
                     <select
                         value={selectedStudentId}
@@ -50,9 +47,6 @@ function BorrowPage() {
                     </select>
                     {studentsError && <p className="error">{studentsError}</p>} {/* Hata mesajını gösterir */}
 
-
-
-
                     <select
                         value={selectedBookId}
                         onChange={(e) => setSelectedBookId(e.target.value)}
@@ -66,8 +60,6 @@ function BorrowPage() {
                         ))}
                     </select> {/* Öğrencileri ve kitapları dropdown olarak gösterir, kullanıcı seçim yapabilir */}
                     {booksError && <p className="error">{booksError}</p>} {/* Hata mesajını gösterir */}
-
-
 
                     <button
                         type="submit"

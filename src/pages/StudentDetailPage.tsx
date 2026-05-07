@@ -3,14 +3,10 @@ import { useParams } from "react-router-dom";
 import UpdateStudentForm from "../components/UpdateStudentForm";
 import { useStudents } from "../context/StudentContext";
 
-
-
 function StudentDetailPage() {
-
   const { detailedStudent, getStudentDetail, loading, error } = useStudents();
 
   const { id } = useParams();
-
 
   useEffect(() => {
     if (id) {
@@ -18,13 +14,13 @@ function StudentDetailPage() {
     }
   }, [id]);
 
-
   const sortedHistory = useMemo(() => {
     if (!detailedStudent?.history) return [];
 
     return [...detailedStudent.history].sort(
       (a, b) =>
-        new Date(b.assignedDate).getTime() - new Date(a.assignedDate).getTime()
+        new Date(b.assignedDate).getTime() -
+        new Date(a.assignedDate).getTime()
     );
   }, [detailedStudent]);
 
@@ -41,7 +37,7 @@ function StudentDetailPage() {
         <p>Öğrenci detay ve kitap geçmişi</p>
       </div>
 
-      <UpdateStudentForm />
+      <UpdateStudentForm student={detailedStudent} />
 
       <div className="form-card">
         <h2>Kitap Geçmişi</h2>
@@ -54,6 +50,7 @@ function StudentDetailPage() {
               <div key={item.assignmentHistoryId} className="history-card">
                 <div className="history-card-top">
                   <h3>{item.bookTitle}</h3>
+
                   <span
                     className={
                       item.returnedDate
@@ -68,10 +65,12 @@ function StudentDetailPage() {
                 <p>
                   <strong>Yazar:</strong> {item.bookAuthor}
                 </p>
+
                 <p>
                   <strong>Alınma Tarihi:</strong>{" "}
                   {new Date(item.assignedDate).toLocaleString()}
                 </p>
+
                 <p>
                   <strong>İade Tarihi:</strong>{" "}
                   {item.returnedDate
