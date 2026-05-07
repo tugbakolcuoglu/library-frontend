@@ -20,19 +20,24 @@ const CreateStudentForm = () => {
          return;
       }
 
-      await addStudent({ name, surname, phoneNumber, email });
+      try {
+         await addStudent({
+            name,
+            surname,
+            phoneNumber: phoneNumber.replace(/\s/g, ""),
+            email,
+         });
 
-      // error var forma dokunmadan cik
-      if (error) {
-         return;
+         // başarılıysa inputları temizle
+         setName("");
+         setSurname("");
+         setPhoneNumber("");
+         setEmail("");
+
+         setSuccessMessage("Öğrenci başarıyla eklendi!");
+      } catch (error: any) {
+         alert(error.response?.data || "Öğrenci eklenemedi");
       }
-
-      // error yok formu temizle islem basarili
-      setName("");
-      setSurname("");
-      setPhoneNumber("");
-      setEmail("");
-      setSuccessMessage("Öğrenci başarıyla eklendi!");
    };
 
    return (

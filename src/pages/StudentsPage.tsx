@@ -5,22 +5,28 @@ import { useStudents } from "../context/StudentContext";
 function StudentPage() {
     const navigate = useNavigate();
 
-
     const { students, deleteStudent } = useStudents();
 
-    if (students.length === 0) return (
-        <div className="page-container">
-            <div className="page-header">
-                <h1>Students</h1>
-                <p>Öğrenci ekleme ve listeleme ekranı</p>
-            </div>
-
-            <CreateStudentForm />
-
-            <p className="empty-text">Öğrenci bulunamadı</p>
-        </div>
+    const sortedStudents = [...students].sort((a, b) =>
+        `${a.name} ${a.surname}`.localeCompare(
+            `${b.name} ${b.surname}`,
+            "tr"
+        )
     );
 
+    if (students.length === 0)
+        return (
+            <div className="page-container">
+                <div className="page-header">
+                    <h1>Students</h1>
+                    <p>Öğrenci ekleme ve listeleme ekranı</p>
+                </div>
+
+                <CreateStudentForm />
+
+                <p className="empty-text">Öğrenci bulunamadı</p>
+            </div>
+        );
 
     return (
         <div className="page-container">
@@ -32,7 +38,7 @@ function StudentPage() {
             <CreateStudentForm />
 
             <div className="list-section">
-                {students.map((student) => (
+                {sortedStudents.map((student) => (
                     <div key={student.id} className="info-card">
                         <div
                             className="clickable-info"
@@ -41,7 +47,9 @@ function StudentPage() {
                             <h3>
                                 {student.name} {student.surname}
                             </h3>
+
                             <p>{student.phoneNumber}</p>
+
                             <p>{student.email}</p>
                         </div>
 
@@ -58,4 +66,4 @@ function StudentPage() {
     );
 }
 
-export default StudentPage;
+export default StudentPage; 

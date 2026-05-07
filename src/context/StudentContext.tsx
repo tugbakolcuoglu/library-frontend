@@ -72,16 +72,23 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
 
    const addStudent = async (student: CreateStudentRequest) => {
       setLoading(true);
-      const response = await api.post<Student>("/student", student);
 
-      if (response.status === 201 || response.status === 200) {
-         setStudents((prevStudents) => [...prevStudents, response.data]);
-         setError("");
-      } else {
-         setError("Öğrenci eklenemedi");
+      try {
+         const response = await api.post<Student>("/student", student);
+
+         if (response.status === 201 || response.status === 200) {
+            setStudents((prevStudents) => [...prevStudents, response.data]);
+            setError("");
+         } else {
+            setError("Öğrenci eklenemedi");
+         }
+      } catch (error: any) {
+         setError(error.response?.data || "Öğrenci eklenemedi");
+         throw error;
+      } finally {
+         setLoading(false);
       }
-      setLoading(false);
-   }
+   };
 
    const deleteStudent = async (id: string) => {
       setLoading(true);
