@@ -5,7 +5,7 @@ import { useStudents } from "../context/StudentContext";
 function StudentPage() {
     const navigate = useNavigate();
 
-    const { students, deleteStudent } = useStudents();
+    const { students, deleteStudent, error } = useStudents();
 
     const sortedStudents = [...students].sort((a, b) =>
         `${a.name} ${a.surname}`.localeCompare(
@@ -36,6 +36,8 @@ function StudentPage() {
             </div>
 
             <CreateStudentForm />
+
+            {error && <p className="error">{error}</p>}
 
             <div className="list-section">
                 {sortedStudents.map((student) => (

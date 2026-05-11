@@ -80,7 +80,6 @@ const CreateStudentForm = () => {
                Öğrenci Ekle
             </button>
 
-            {error && <p className="error-message">{error}</p>}
          </form>
 
          {successMessage && <p className="success-message">{successMessage}</p>}

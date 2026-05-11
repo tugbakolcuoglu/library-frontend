@@ -98,7 +98,7 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
          setStudents((prevStudents) => prevStudents.filter((student) => student.id !== id));
          setError("");
       } else {
-         setError("Öğrenci silinemedi");
+         setError("Öğrenci silinemedi. İade edilmemiş kitapları olabilir.");
       }
       setLoading(false);
    }
