@@ -10,7 +10,7 @@ const CreateStudentForm = () => {
 
    const [successMessage, setSuccessMessage] = useState("");
 
-   const { addStudent, loading, error } = useStudents();
+   const { addStudent, loading } = useStudents();
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
