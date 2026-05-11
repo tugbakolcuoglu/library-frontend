@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
+import { useStudents } from "../context/StudentContext";
 import api from "../services/api";
 
-type Student = {
-    id: string;
-    name: string;
-    surname: string;
-};
+
 
 type StudentHistoryItem = {
     assignmentHistoryId: string;
@@ -26,35 +24,12 @@ type StudentDetail = {
 };
 
 function ReturnPage() {
-    const [students, setStudents] = useState<Student[]>([]);
     const [selectedStudentId, setSelectedStudentId] = useState<string>("");
     const [borrowedBooks, setBorrowedBooks] = useState<StudentHistoryItem[]>([]);
     const [selectedBookId, setSelectedBookId] = useState<string>("");
     const [message, setMessage] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        const fetchStudents = async () => {
-            try {
-                const response = await api.get<Student[]>("/student");
-
-                const sortedStudents = [...response.data].sort((a, b) =>
-                    `${a.name} ${a.surname}`.localeCompare(
-                        `${b.name} ${b.surname}`,
-                        "tr"
-                    )
-                );
-
-                setStudents(sortedStudents);
-            } catch (error: any) {
-                setMessage(error.response?.data || "Öğrenciler alınamadı");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStudents();
-    }, []);
+    const { students } = useStudents();
 
     const handleStudentChange = async (
         e: React.ChangeEvent<HTMLSelectElement>
@@ -116,7 +91,6 @@ function ReturnPage() {
         }
     };
 
-    if (loading) return <p className="loading">Yükleniyor...</p>;
 
     return (
         <div className="page-container">

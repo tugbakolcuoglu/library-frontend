@@ -105,7 +105,8 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
 
    const updateStudent = async (student: UpdateStudentRequest) => {
       setLoading(true);
-      const response = await api.put<Student>(`/student/${student.id}`, student);
+      const response = await api.put<Student>(`/student`, student);
+
 
       if (response.status === 200) {
          setStudents((prevStudents) =>

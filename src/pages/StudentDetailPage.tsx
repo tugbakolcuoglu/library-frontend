@@ -4,7 +4,7 @@ import UpdateStudentForm from "../components/UpdateStudentForm";
 import { useStudents } from "../context/StudentContext";
 
 function StudentDetailPage() {
-  const { detailedStudent, getStudentDetail, loading, error } = useStudents();
+  const { detailedStudent, getStudentDetail, error } = useStudents();
 
   const { id } = useParams();
 
@@ -24,8 +24,6 @@ function StudentDetailPage() {
     );
   }, [detailedStudent]);
 
-  if (loading) return <p className="loading">Yükleniyor...</p>;
-  if (error) return <p className="error">{error}</p>;
   if (!detailedStudent) return <p className="error">Öğrenci bulunamadı</p>;
 
   return (
@@ -38,6 +36,8 @@ function StudentDetailPage() {
       </div>
 
       <UpdateStudentForm student={detailedStudent} />
+
+      {error && <p className="error">{error}</p>}
 
       <div className="form-card">
         <h2>Kitap Geçmişi</h2>

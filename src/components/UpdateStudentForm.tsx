@@ -17,7 +17,7 @@ type UpdateStudentFormProps = {
 const UpdateStudentForm = ({ student }: UpdateStudentFormProps) => {
   const navigate = useNavigate();
 
-  const { updateStudent } = useStudents();
+  const { updateStudent, loading } = useStudents();
 
   const [name, setName] = useState<string>(student.name);
   const [surname, setSurname] = useState<string>(student.surname);
@@ -32,20 +32,14 @@ const UpdateStudentForm = ({ student }: UpdateStudentFormProps) => {
       return;
     }
 
-    try {
-      await updateStudent({
-        id: student.id,
-        name,
-        surname,
-        phoneNumber: phoneNumber.replace(/\s/g, ""),
-        email,
-      });
+    await updateStudent({
+      id: student.id,
+      name,
+      surname,
+      phoneNumber: phoneNumber.replace(/\s/g, ""),
+      email,
+    });
 
-      alert("Öğrenci bilgileri güncellendi");
-      navigate("/students");
-    } catch (error: any) {
-      alert(error.response?.data || "Öğrenci güncellenemedi");
-    }
   };
 
   return (
@@ -54,6 +48,7 @@ const UpdateStudentForm = ({ student }: UpdateStudentFormProps) => {
 
       <form onSubmit={handleUpdate} className="custom-form">
         <input
+          disabled={loading}
           type="text"
           placeholder="Ad"
           value={name}
@@ -61,6 +56,7 @@ const UpdateStudentForm = ({ student }: UpdateStudentFormProps) => {
         />
 
         <input
+          disabled={loading}
           type="text"
           placeholder="Soyad"
           value={surname}
@@ -68,6 +64,7 @@ const UpdateStudentForm = ({ student }: UpdateStudentFormProps) => {
         />
 
         <input
+          disabled={loading}
           type="text"
           placeholder="Telefon"
           value={phoneNumber}
@@ -75,18 +72,28 @@ const UpdateStudentForm = ({ student }: UpdateStudentFormProps) => {
         />
 
         <input
+          disabled={loading}
           type="email"
           placeholder="E-posta"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <button type="submit">Güncelle</button>
+        <button disabled={loading} type="submit">
+          Güncelle
+        </button>
+
+
       </form>
 
-      <button className="back-btn" onClick={() => navigate("/students")}>
+      <button
+        disabled={loading}
+        className="back-btn"
+        onClick={() => navigate("/students")}
+      >
         Geri Dön
       </button>
+
     </div>
   );
 };
